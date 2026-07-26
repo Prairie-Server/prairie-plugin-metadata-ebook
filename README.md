@@ -1,6 +1,6 @@
-# Silo Ebook Metadata Plugin
+# Prairie Ebook Metadata Plugin
 
-Standalone metadata provider plugin for Silo ebook libraries.
+Standalone metadata provider plugin for Prairie ebook libraries.
 
 ## Capability
 

@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Silo-Server/silo-plugin-ebook-metadata/metadata"
+	"github.com/prairie-server/prairie-plugin-metadata-ebook/metadata"
 )
 
 func sourceQueryText(q metadata.SearchQuery) string {

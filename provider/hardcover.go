@@ -10,7 +10,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/Silo-Server/silo-plugin-ebook-metadata/metadata"
+	"github.com/prairie-server/prairie-plugin-metadata-ebook/metadata"
 )
 
 const hardcoverBaseURL = "https://api.hardcover.app/v1/graphql"

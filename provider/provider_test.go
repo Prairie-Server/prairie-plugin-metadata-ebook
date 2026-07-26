@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/Silo-Server/silo-plugin-ebook-metadata/metadata"
+	"github.com/prairie-server/prairie-plugin-metadata-ebook/metadata"
 )
 
 type fakeSource struct {
