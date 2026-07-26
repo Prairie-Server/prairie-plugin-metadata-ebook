@@ -6,9 +6,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Silo-Server/silo-plugin-ebook-metadata/metadata"
-	"github.com/Silo-Server/silo-plugin-ebook-metadata/provider"
-	pluginv1 "github.com/Silo-Server/silo-plugin-sdk/pkg/pluginproto/silo/plugin/v1"
+	"github.com/prairie-server/prairie-plugin-metadata-ebook/metadata"
+	"github.com/prairie-server/prairie-plugin-metadata-ebook/provider"
+	pluginv1 "github.com/prairie-server/prairie-plugin-sdk/pkg/pluginproto/prairie/plugin/v1"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -230,14 +230,14 @@ func TestLoadManifestParsesEbookCapability(t *testing.T) {
 		t.Fatalf("loadManifest() error = %v", err)
 	}
 
-	if manifest.GetPluginId() != "silo.ebook-metadata" {
-		t.Fatalf("PluginId = %q, want silo.ebook-metadata", manifest.GetPluginId())
+	if manifest.GetPluginId() != "prairie.ebook-metadata" {
+		t.Fatalf("PluginId = %q, want prairie.ebook-metadata", manifest.GetPluginId())
 	}
 	if manifest.GetVersion() != "0.1.1" {
 		t.Fatalf("Version = %q, want 0.1.1", manifest.GetVersion())
 	}
-	if manifest.GetSiloApiVersion() != "v1" {
-		t.Fatalf("SiloApiVersion = %q, want v1", manifest.GetSiloApiVersion())
+	if manifest.GetPrairieApiVersion() != "v1" {
+		t.Fatalf("PrairieApiVersion = %q, want v1", manifest.GetPrairieApiVersion())
 	}
 
 	capabilities := manifest.GetCapabilities()

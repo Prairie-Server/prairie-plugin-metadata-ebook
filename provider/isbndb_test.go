@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Silo-Server/silo-plugin-ebook-metadata/metadata"
+	"github.com/prairie-server/prairie-plugin-metadata-ebook/metadata"
 )
 
 func newISBNdbFake(t *testing.T, apiKey string) (*httptest.Server, *ISBNdbClient, *int) {

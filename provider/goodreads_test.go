@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Silo-Server/silo-plugin-ebook-metadata/metadata"
+	"github.com/prairie-server/prairie-plugin-metadata-ebook/metadata"
 )
 
 func newGoodreadsFake(t *testing.T) (*httptest.Server, *GoodreadsClient, *int) {

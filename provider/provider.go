@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Silo-Server/silo-plugin-ebook-metadata/metadata"
+	"github.com/prairie-server/prairie-plugin-metadata-ebook/metadata"
 )
 
 const (
@@ -158,7 +158,7 @@ func (p *Provider) Fetch(ctx context.Context, q metadata.SearchQuery) (*metadata
 }
 
 func defaultSources(options Options) []Source {
-	userAgent := "silo-plugin-ebook-metadata/0.1"
+	userAgent := "prairie-plugin-metadata-ebook/0.1"
 	sources := []Source{
 		NewOpenLibraryClient(userAgent),
 		NewGoogleBooksClient(options.GoogleBooksAPIKey, userAgent),

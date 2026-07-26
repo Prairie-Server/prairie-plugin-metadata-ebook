@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/Silo-Server/silo-plugin-ebook-metadata/metadata"
+	"github.com/prairie-server/prairie-plugin-metadata-ebook/metadata"
 )
 
 const isbndbBaseURL = "https://api2.isbndb.com"
