@@ -234,8 +234,8 @@ func TestLoadManifestParsesEbookCapability(t *testing.T) {
 	if manifest.GetPluginId() != "prairie.ebook-metadata" {
 		t.Fatalf("PluginId = %q, want prairie.ebook-metadata", manifest.GetPluginId())
 	}
-	if manifest.GetVersion() != "0.1.1" {
-		t.Fatalf("Version = %q, want 0.1.1", manifest.GetVersion())
+	if manifest.GetVersion() != "0.1.2" {
+		t.Fatalf("Version = %q, want 0.1.2", manifest.GetVersion())
 	}
 	if manifest.GetPrairieApiVersion() != "v1" {
 		t.Fatalf("PrairieApiVersion = %q, want v1", manifest.GetPrairieApiVersion())
