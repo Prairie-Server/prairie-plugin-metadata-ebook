@@ -321,3 +321,194 @@ func TestRuntimeServerGetManifestReturnsLoadedManifest(t *testing.T) {
 		t.Fatalf("GetManifest() returned manifest %p, want %p", resp.GetManifest(), manifest)
 	}
 }
+
+func TestMetadataServerSearchMapsResults(t *testing.T) {
+	src := &fakeMainSource{
+		id: "openlibrary",
+		matches: []metadata.Match{{
+			Provider:    "openlibrary",
+			ProviderID:  "OL1",
+			Title:       "Good Book",
+			Description: "Overview",
+			PublishYear: 2020,
+			CoverURL:    "https://example.invalid/cover.jpg",
+			ISBN:        "9780593135204",
+		}},
+	}
+	server := &metadataServer{
+		runtime: &runtimeServer{state: runtimeState{provider: provider.NewProviderWithSources([]provider.Source{src})}},
+	}
+	ids, err := structpb.NewStruct(map[string]any{"openlibrary": "OL1"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := server.Search(context.Background(), &pluginv1.SearchMetadataRequest{
+		Query:       "Good Book",
+		ItemType:    "ebook",
+		Year:        2020,
+		Language:    "en",
+		ProviderIds: ids,
+	})
+	if err != nil {
+		t.Fatalf("Search: %v", err)
+	}
+	if len(resp.GetResults()) != 1 {
+		t.Fatalf("results = %d", len(resp.GetResults()))
+	}
+	if resp.GetResults()[0].GetTitle() != "Good Book" {
+		t.Fatalf("title = %q", resp.GetResults()[0].GetTitle())
+	}
+}
+
+func TestMetadataServerGetMetadataSuccess(t *testing.T) {
+	src := &fakeMainSource{
+		id: "openlibrary",
+		fetch: &metadata.Match{
+			Provider:   "openlibrary",
+			ProviderID: "OL1",
+			Title:      "Fetched",
+			Authors:    []string{" Author ", ""},
+			Genres:     []string{" Sci-Fi ", ""},
+			Publisher:  "Pub",
+		},
+	}
+	server := &metadataServer{
+		runtime: &runtimeServer{state: runtimeState{provider: provider.NewProviderWithSources([]provider.Source{src})}},
+	}
+	resp, err := server.GetMetadata(context.Background(), &pluginv1.GetMetadataRequest{
+		ProviderId: "openlibrary:OL1",
+		ItemType:   "ebook",
+	})
+	if err != nil {
+		t.Fatalf("GetMetadata: %v", err)
+	}
+	if resp.GetItem().GetTitle() != "Fetched" {
+		t.Fatalf("item = %#v", resp.GetItem())
+	}
+	if len(resp.GetItem().GetPeople()) != 1 || resp.GetItem().GetPeople()[0].GetName() != "Author" {
+		t.Fatalf("people = %#v", resp.GetItem().GetPeople())
+	}
+}
+
+func TestMetadataServerGetMetadataFetchError(t *testing.T) {
+	src := &fakeMainSource{id: "openlibrary", fetchErr: errFake}
+	server := &metadataServer{
+		runtime: &runtimeServer{state: runtimeState{provider: provider.NewProviderWithSources([]provider.Source{src})}},
+	}
+	if _, err := server.GetMetadata(context.Background(), &pluginv1.GetMetadataRequest{
+		ProviderId: "openlibrary:OL1",
+		ItemType:   "ebook",
+	}); err == nil {
+		t.Fatal("expected fetch error")
+	}
+}
+
+func TestStateForRequestCreatesDefaultProvider(t *testing.T) {
+	server := &runtimeServer{}
+	state := server.stateForRequest()
+	if state.provider == nil {
+		t.Fatal("expected default provider")
+	}
+}
+
+func TestHelperEdgeCases(t *testing.T) {
+	if primaryProviderID(metadata.Match{ISBN: "978-0-593-13520-4"}) == "" {
+		t.Fatal("expected isbn fallback")
+	}
+	if len(stringMapFromStruct(nil)) != 0 {
+		t.Fatal("nil struct")
+	}
+	st, err := structpb.NewStruct(map[string]any{"a": "1", "b": 2, "c": ""})
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := stringMapFromStruct(st)
+	if got["a"] != "1" || len(got) != 1 {
+		t.Fatalf("got %#v", got)
+	}
+	if configEntryString(nil) != "" {
+		t.Fatal("nil config")
+	}
+	payload, err := structpb.NewStruct(map[string]any{"other": "x"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if configEntryString(payload) != "x" {
+		t.Fatal("fallback field")
+	}
+	empty, err := structpb.NewStruct(map[string]any{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if configEntryString(empty) != "" {
+		t.Fatal("empty fields")
+	}
+	if firstText("", "  ", "hi") != "hi" {
+		t.Fatal("firstText")
+	}
+	if firstText("", "  ") != "" {
+		t.Fatal("firstText empty")
+	}
+	opts := providerOptionsFromConfig([]*pluginv1.ConfigEntry{nil, configEntry(t, "unknown", "x")})
+	if opts.DefaultRegion != "" {
+		t.Fatalf("unexpected options %#v", opts)
+	}
+	out, err := stringStruct(map[string]string{" ": "x", "k": "", "ok": "v"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if out.GetFields()["ok"].GetStringValue() != "v" || len(out.GetFields()) != 1 {
+		t.Fatalf("%#v", out.GetFields())
+	}
+	if genresFromMatch(metadata.Match{}) != nil {
+		t.Fatal("empty genres")
+	}
+	if publisherStudio("") != nil {
+		t.Fatal("empty publisher")
+	}
+	if peopleFromMatch(metadata.Match{Authors: []string{"", "  "}}) != nil && len(peopleFromMatch(metadata.Match{Authors: []string{"", "  "}})) != 0 {
+		t.Fatal("blank authors")
+	}
+}
+
+type fakeMainSource struct {
+	id      string
+	matches []metadata.Match
+	fetch   *metadata.Match
+	fetchErr error
+}
+
+func (s *fakeMainSource) ID() string { return s.id }
+func (s *fakeMainSource) Search(context.Context, metadata.SearchQuery) ([]metadata.Match, error) {
+	return s.matches, nil
+}
+func (s *fakeMainSource) Fetch(context.Context, string) (*metadata.Match, error) {
+	return s.fetch, s.fetchErr
+}
+
+var errFake = errString("fake fetch failed")
+
+type errString string
+
+func (e errString) Error() string { return string(e) }
+
+func TestMetadataServerSearchIgnoresSourceErrors(t *testing.T) {
+	server := &metadataServer{
+		runtime: &runtimeServer{state: runtimeState{provider: provider.NewProviderWithSources([]provider.Source{&errSearchSource{}})}},
+	}
+	resp, err := server.Search(context.Background(), &pluginv1.SearchMetadataRequest{Query: "x", ItemType: "ebook"})
+	if err != nil {
+		t.Fatalf("Search: %v", err)
+	}
+	if len(resp.GetResults()) != 0 {
+		t.Fatalf("results = %#v", resp.GetResults())
+	}
+}
+
+type errSearchSource struct{}
+
+func (errSearchSource) ID() string { return "openlibrary" }
+func (errSearchSource) Search(context.Context, metadata.SearchQuery) ([]metadata.Match, error) {
+	return nil, errString("search failed")
+}
+func (errSearchSource) Fetch(context.Context, string) (*metadata.Match, error) { return nil, nil }
