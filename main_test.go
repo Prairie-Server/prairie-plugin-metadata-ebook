@@ -6,10 +6,11 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/prairie-server/prairie-plugin-metadata-ebook/metadata"
-	"github.com/prairie-server/prairie-plugin-metadata-ebook/provider"
 	pluginv1 "github.com/prairie-server/prairie-plugin-sdk/pkg/pluginproto/prairie/plugin/v1"
 	"google.golang.org/protobuf/types/known/structpb"
+
+	"github.com/prairie-server/prairie-plugin-metadata-ebook/metadata"
+	"github.com/prairie-server/prairie-plugin-metadata-ebook/provider"
 )
 
 func TestRuntimeServerConfigureNoOp(t *testing.T) {
@@ -472,9 +473,9 @@ func TestHelperEdgeCases(t *testing.T) {
 }
 
 type fakeMainSource struct {
-	id      string
-	matches []metadata.Match
-	fetch   *metadata.Match
+	id       string
+	matches  []metadata.Match
+	fetch    *metadata.Match
 	fetchErr error
 }
 
