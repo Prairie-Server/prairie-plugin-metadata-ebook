@@ -16,10 +16,10 @@ func TestGutenbergFetchAndSearch(t *testing.T) {
 	book := loadProviderFixture(t, "gutenberg_book.json")
 	search := loadProviderFixture(t, "gutenberg_search.json")
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch {
-		case r.URL.Path == "/books/84":
+		switch r.URL.Path {
+		case "/books/84":
 			w.Write(book)
-		case r.URL.Path == "/books":
+		case "/books":
 			w.Write(search)
 		default:
 			w.WriteHeader(http.StatusNotFound)
@@ -56,10 +56,10 @@ func TestBookBrainzFetchAndSearch(t *testing.T) {
 	edition := loadProviderFixture(t, "bookbrainz_edition.json")
 	search := loadProviderFixture(t, "bookbrainz_search.json")
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch {
-		case r.URL.Path == "/edition/"+bbValidID:
+		switch r.URL.Path {
+		case "/edition/" + bbValidID:
 			w.Write(edition)
-		case r.URL.Path == "/search":
+		case "/search":
 			w.Write(search)
 		default:
 			w.WriteHeader(http.StatusNotFound)
@@ -247,12 +247,12 @@ func TestLibraryThingFetchAndSearch(t *testing.T) {
 	work := loadProviderFixture(t, "librarything_work.html")
 	search := loadProviderFixture(t, "librarything_search.html")
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch {
-		case r.URL.Path == "/isbn/9780441172665":
+		switch r.URL.Path {
+		case "/isbn/9780441172665":
 			w.Write(work)
-		case r.URL.Path == "/work/1234", r.URL.Path == "/work/5678", r.URL.Path == "/work/9012":
+		case "/work/1234", "/work/5678", "/work/9012":
 			w.Write(work)
-		case r.URL.Path == "/search.php":
+		case "/search.php":
 			w.Write(search)
 		default:
 			w.WriteHeader(http.StatusNotFound)
@@ -295,10 +295,10 @@ func TestInternetArchiveFetchAndSearch(t *testing.T) {
 	meta := loadProviderFixture(t, "internetarchive_metadata.json")
 	search := loadProviderFixture(t, "internetarchive_search.json")
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch {
-		case r.URL.Path == "/metadata/frankenstein00mary":
+		switch r.URL.Path {
+		case "/metadata/frankenstein00mary":
 			w.Write(meta)
-		case r.URL.Path == "/advancedsearch.php":
+		case "/advancedsearch.php":
 			w.Write(search)
 		default:
 			w.WriteHeader(http.StatusNotFound)
@@ -354,12 +354,12 @@ func TestWorldCatFetchAndSearch(t *testing.T) {
 	record := loadProviderFixture(t, "worldcat_record.html")
 	search := loadProviderFixture(t, "worldcat_search.html")
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch {
-		case r.URL.Path == "/isbn/9780441172665":
+		switch r.URL.Path {
+		case "/isbn/9780441172665":
 			w.Write(record)
-		case r.URL.Path == "/oclc/rec":
+		case "/oclc/rec":
 			w.Write(record)
-		case r.URL.Path == "/search":
+		case "/search":
 			w.Write(search)
 		default:
 			w.WriteHeader(http.StatusNotFound)

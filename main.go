@@ -10,12 +10,13 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/prairie-server/prairie-plugin-metadata-ebook/metadata"
-	"github.com/prairie-server/prairie-plugin-metadata-ebook/provider"
 	pluginv1 "github.com/prairie-server/prairie-plugin-sdk/pkg/pluginproto/prairie/plugin/v1"
 	publicmanifest "github.com/prairie-server/prairie-plugin-sdk/pkg/pluginsdk/manifest"
 	"github.com/prairie-server/prairie-plugin-sdk/pkg/pluginsdk/runtime"
 	"google.golang.org/protobuf/types/known/structpb"
+
+	"github.com/prairie-server/prairie-plugin-metadata-ebook/metadata"
+	"github.com/prairie-server/prairie-plugin-metadata-ebook/provider"
 )
 
 // version is set at build time via -ldflags "-X main.version=...".
