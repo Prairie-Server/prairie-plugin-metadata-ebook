@@ -56,7 +56,7 @@ func httpDoBytes(ctx context.Context, client *http.Client, req *http.Request) ([
 	if err != nil {
 		return nil, 0, fmt.Errorf("%s %s: request: %w", req.Method, redactURL(req.URL), err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	body, err := io.ReadAll(io.LimitReader(resp.Body, maxResponseBytes+1))
 	if err != nil {
